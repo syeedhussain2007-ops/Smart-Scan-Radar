@@ -72,24 +72,6 @@ Processing
 ↓  
 Real-Time Radar Display
 
-## 📸 Project Demonstration
-
-### Complete Radar Setup
-
-![Radar Setup](images/radar_setup.jpg)
-
-### Hardware Connections
-
-![Hardware Connections](images/hardware_connections.jpg)
-
-### Sensor and Servo Assembly
-
-![Sensor and Servo Assembly](images/sensor_servo_assembly.jpg)
-
-## 🎥 Demo
-
-[▶️ View the Radar Demonstration](demo/radar_demo_github.mp4)
-
 ## 🎯 Applications
 
 - Object detection
