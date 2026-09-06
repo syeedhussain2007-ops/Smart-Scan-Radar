@@ -1,0 +1,134 @@
+import processing.serial.*;
+
+Serial myPort;
+
+float angle = 0;
+float distance = -1;
+
+int maxDistance = 200;
+
+void setup() {
+  size(1000, 600);
+
+  myPort = new Serial(this, "COM3", 9600);
+  myPort.bufferUntil('\n');
+
+  smooth();
+}
+
+void draw() {
+  background(0);
+
+  drawRadar();
+  drawSweepLine();
+  drawObject();
+  drawInformation();
+}
+
+void serialEvent(Serial myPort) {
+
+  String data = myPort.readStringUntil('\n');
+
+  if (data != null) {
+
+    data = trim(data);
+
+    String[] values = split(data, ',');
+
+    if (values.length == 2) {
+
+      angle = float(values[0]);
+      distance = float(values[1]);
+    }
+  }
+}
+
+void drawRadar() {
+
+  pushMatrix();
+
+  translate(width/2, height - 50);
+
+  stroke(0, 255, 0);
+  noFill();
+
+  // Distance rings
+  for (int r = 50; r <= maxDistance; r += 50) {
+    arc(0, 0, r*2, r*2, PI, TWO_PI);
+  }
+
+  // Horizontal line
+  line(-maxDistance, 0, maxDistance, 0);
+
+  // Radar angle lines
+  line(0, 0, -maxDistance*cos(radians(30)),
+       -maxDistance*sin(radians(30)));
+
+  line(0, 0, -maxDistance*cos(radians(60)),
+       -maxDistance*sin(radians(60)));
+
+  line(0, 0, 0, -maxDistance);
+
+  line(0, 0, maxDistance*cos(radians(60)),
+       -maxDistance*sin(radians(60)));
+
+  line(0, 0, maxDistance*cos(radians(30)),
+       -maxDistance*sin(radians(30)));
+
+  popMatrix();
+}
+
+void drawSweepLine() {
+
+  pushMatrix();
+
+  translate(width/2, height - 50);
+
+  stroke(0, 255, 0);
+  strokeWeight(3);
+
+  float x = maxDistance*cos(radians(180-angle));
+  float y = -maxDistance*sin(radians(180-angle));
+
+  line(0, 0, x, y);
+
+  popMatrix();
+}
+
+void drawObject() {
+
+  if (distance > 0 && distance <= maxDistance) {
+
+    pushMatrix();
+
+    translate(width/2, height - 50);
+
+    float r = map(distance, 0, maxDistance, 0, maxDistance);
+
+    float x = r*cos(radians(180-angle));
+    float y = -r*sin(radians(180-angle));
+
+    fill(255, 0, 0);
+    noStroke();
+
+    ellipse(x, y, 12, 12);
+
+    popMatrix();
+  }
+}
+
+void drawInformation() {
+
+  fill(255);
+  textSize(20);
+
+  text("ARDUINO RADAR", 20, 30);
+
+  text("Angle: " + nf(angle, 0, 1) + "°", 20, 60);
+
+  if (distance > 0) {
+    text("Distance: " + nf(distance, 0, 1) + " cm", 20, 90);
+  } else {
+    text("Distance: No object", 20, 90);
+  }
+}
